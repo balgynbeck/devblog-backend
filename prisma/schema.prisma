@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String    @id @default(uuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role      @default(USER)
+  avatar       String?
+  createdAt    DateTime  @default(now())
+  articles     Article[]
+  comments     Comment[]
+}
+
+model Category {
+  id       String    @id @default(uuid())
+  name     String
+  slug     String    @unique
+  articles Article[]
+}
+
+model Article {
+  id         String    @id @default(uuid())
+  title      String
+  slug       String    @unique
+  content    String
+  imageUrl   String?
+  published  Boolean   @default(true)
+  author     User      @relation(fields: [authorId], references: [id])
+  authorId   String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String
+  comments   Comment[]
+  tags       Tag[]     @relation("ArticleTags")
+  createdAt  DateTime  @default(now())
+
+  @@index([slug])
+  @@index([authorId])
+  @@index([categoryId])
+}
+
+model Tag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  slug     String    @unique
+  articles Article[] @relation("ArticleTags")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId String
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
