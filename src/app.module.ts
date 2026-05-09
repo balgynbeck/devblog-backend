@@ -7,6 +7,7 @@ import { ArticlesModule } from "./articles/articles.module";
 import { CategoriesModule } from "./categories/categories.module";
 import { CommentsModule } from "./comments/comments.module";
 import { UploadModule } from "./upload/upload.module";
+import { AppController } from "./app.controller";
 
 @Module({
   imports: [
@@ -19,5 +20,6 @@ import { UploadModule } from "./upload/upload.module";
     CommentsModule,
     UploadModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}
